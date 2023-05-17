@@ -3,15 +3,60 @@
 3 - alterar script package.json para "start": "dev" para nao subir em producao e dar algum erro.
 4 - npm i express para instalar o express no projeto (depois do comando as pasta node_modules e package-lock.json vao aparecer). Essa ultima tras com ela todas as dependencias que serao necessarias. 
 5 - Se nao tiver node_modules instalado o express nao roda na nossa maquina
-6 - criar index.js 
-7 - criar constante express e chamar essa constante
-const express = require("express);
+6 - criar index.js  
+7 - criar constante express 
+
+const express = require("express");
+//executar essa constante
 const app = express();
 
 //criar endpoint get (rota)
-app.get("/", () => {
+app.get("/", (req,res) => {
 	res.send("Mensagem a exibir");
 	});
 	
 //define porta 
 app.listen(3000);
+
+//npm start para rodar 
+
+//se alterarmos a rota precisamos parar o servidor e executa-lo novamente (se nao usar o nodemon)
+
+//para evitar isso instalamos o nodemon
+npm i nodemon
+
+//ir para o package.json e colocar outro script chamado "dev": "nodemon index". Esse script nos permite trabalhar em ambiente de desenvolvimento sem ficar parando toda hora a aplicacao.
+//para rodar o script dev, executar o comando:
+npm run dev
+
+//criar arquivo .gitignore na pasta raiz do projeto e ignorar a pasta node_modules.
+
+//se baixarmos o arquivo do git e quisermos rodar ele, precisamos dar o comando:
+npm i 
+//esse comando baixa todas as dependencias. Isso e necessario porque quando subimos o projeto para o git nos nao subimos a pasta node_modules com as dependencias 
+necessarias para rodar o projeto.
+
+//criando o projeto:
+
+//criar pasta src na raiz do projeto 
+//criar as seguintes pastas dentro de src: controllers, database, middlewares, models e routes.
+//dentro de controllers, criar o arquivo controller.js
+//dentro de routes, criar o arquivo user.route.js
+//criar const route = require("express").Router();    -> Assim ja criamos a const e executamos o express, sem necessidade de criar a const app
+//ainda dentro do arquivo route.js, criar o metodo get:
+route.get("/");
+
+//no arquivo user.controller.js, criar modulo:
+const user = (req, res) => {
+	return console.log("O que quiser aqui no codigo");
+}
+
+// exportar modulo user:
+module.exports = {user}   -> Assim exportamos o modulo como objeto.
+
+
+
+
+
+
+
