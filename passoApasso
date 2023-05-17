@@ -1,0 +1,17 @@
+1 - criar pasta do projeto
+2 - npm init e configurar nomear o projeto, com versao, autor, etc
+3 - alterar script package.json para "start": "dev" para nao subir em producao e dar algum erro.
+4 - npm i express para instalar o express no projeto (depois do comando as pasta node_modules e package-lock.json vao aparecer). Essa ultima tras com ela todas as dependencias que serao necessarias. 
+5 - Se nao tiver node_modules instalado o express nao roda na nossa maquina
+6 - criar index.js 
+7 - criar constante express e chamar essa constante
+const express = require("express);
+const app = express();
+
+//criar endpoint get (rota)
+app.get("/", () => {
+	res.send("Mensagem a exibir");
+	});
+	
+//define porta 
+app.listen(3000);
