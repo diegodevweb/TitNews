@@ -239,7 +239,7 @@ const create = (req, res) => {
         res.status(400).send({message: "Preencha todos os campos!"});
     }
 
-	🚩️const user = userService.create(req.body); ---->>> AQUI🚩️
+	🚩️const user = userService.createService(req.body); ---->>> AQUI🚩️
 
     if(!user) {
         return res.status(400).send({message: "Erro ao criar usuario."});
@@ -271,11 +271,11 @@ const create = 🚩️async (req, res) => {
     }
 
 //e o await vai ficar antes de userService pelo seguinte motivo: 
-//ao colocar ele aqui, estamos dizendo: Espera executar o userService.create para poder continuar a verificacao.
+//ao colocar ele aqui, estamos dizendo: Espera executar o userService.createService para poder continuar a verificacao.
 
-    const user = 🚩️ await userService.create(req.body);
+    const user = 🚩️ await userService.createService(req.body);
 
-//se nao esperarmos vai dar erro, porque quando chegar nesse if o user ainda nao vai ter o retorno de user.Service.create (pq ele e assincrono)
+//se nao esperarmos vai dar erro, porque quando chegar nesse if o user ainda nao vai ter o retorno de user.Service.createService (pq ele e assincrono)
 
     if(!user) {
         return res.status(400).send({message: "Erro ao criar usuario."});
@@ -292,5 +292,69 @@ const create = 🚩️async (req, res) => {
         }, 
     });
 };
+
+🚩️interessante saber: o index acessa a rota, que por sua vez acessa o controller, que acessa o service
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------
+
+//criando a rota get
+
+na user.route.js, criar route.get("/", userController.findAllUsers);
+//como essa funcao findAll ainda nao existe, vamos no user.controller.js cria-la
+const findAll = async (req, res) => {
+    const users = await userService.findAllService();  //esse findAllService vem do services
+    
+    if(users.length === 0) {
+        return res.status(400).send({ message: "Nao ha usuarios cadastrados."});
+    }
+
+    res.send(users);
+}
+
+//exportar findAll
+module.exports = { create(que ja estava aqui), findAll };
+
+//criar findAllService no arquivo services
+const findAllService = () => User.find();
+
+//exportar findAllService 
+
+//criar rota para trazer o usuario pelo id
+route.get("/:id", userController.findById);
+
+const findById = async (req, res) => {
+    const id = req.params.id;   🚩️aqui a requisicao e pelo parametro id 
+
+    if(!mongoose.Types.ObjectId.isValid(id)){
+        return res.status(400).send({message: "ID invalido!"}); //🚩️Se o id nao for valido, retorna o erro
+    }
+
+    const user = await userService.findByIdService(id);
+
+    if(!user) {
+        return res.status(400).send({message: "Usuario nao encontrado"}); //🚩️se nao encontrar o usuario, retorna o erro message
+    }
+
+    res.send(user); //🚩️Senao ele mostra o user com todos os dados.
+}
+
+//criar findByIdService
+const findByIdService = (id) => User.findById(id);
+
+//depois, exportar findByIdService
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
