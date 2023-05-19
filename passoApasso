@@ -153,14 +153,144 @@ const create = (req, res) => {
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------
 
-Ate aqui nao mexemos com banco de dados, vamos comecar agora.
+Ate aqui nao mexemos com banco de dados, vamos comecar agora. Verificar alguns detalhes sobre
+banco de dados no arquivo mongoDb.
 
+//depois de criar o banco de dados, vamos na pasta src/database e criamos o arquivo(modulo) db.js
+//criar a const mongoose = require("mongoose");
+//criar a const connectDatabase, que recebe uma arrow function, assim:
+const connectDatabase = () => {
+    console.log("Esperando conexao com o banco de dados.");
 
+    mongoose.connect("mongodb+srv://diegodevwebb:P9dOaejq8R4TMk8u@titnews.6r4u2s8.mongodb.net/?retryWrites=true&w=majority",
+    { useNewUrlParser: true, useUnifiedTopology: true}).then(() => console.log("MongoDb Atlas connected.")).catch((error) => console.log(error));
+}
 
+//obs: a string de conexao pegamos no mongodb atlas.
+//exportar esse modulo:
+module.exports = connectDatabase;
 
+//depois vamos na pasta models e criamos o arquivo User.js (os arquivos da pasta model por convencao sempre comecam com letra maiuscula). 
+//importar mongoose 
+const mongoose = require("mongoose");
 
+//criar const que sera um modelo padrao na hora de criar os usuarios
 
+const UserSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: true,
+  },
+  userName: {
+    type: String,
+    required: true,
+  },
+  email: {
+    type: String,
+    required: true,
+    unique: true,     //aqui o unique serve para impor exclusividade. No caso nao podemos ter dois emails iguais.
+  },
+  password: {
+    type: String,
+    required: true,
+  },
+  avatar: {},
+});
 
+//criar const para colocar o schema dentro e exportar:
+const User = mongoose.model("User", UserSchema); 
+//aqui estamos indicando o nome da model "User" e de onde ela vem: "UserSchema".
 
+//exportar modulo 
+module.exports = User;
+
+//agora na pasta services, criar o arquivo(modulo) user.services.js (aqui tudo minusculo)
+//dentro desse arquivo criar const importando o modelo que vamos usar no banco de dados:
+const user = require("../models/User");
+
+//depois criar uma const create. Essa const recebe os dados do body(primeiro parametro) e passa os dados que recebeu desse parametro no segundo.
+const create = (body) => User.create(body);
+
+//exportar modulo como objeto:
+module.exports = {
+    create, 
+}
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------
+
+//agora vamos no arquivo user.controller.js importar o user.service.js para poder fazer as verificacoes necessarias para criar o usuario. 
+//o arquivo user.service.js e quem tem os metodos de criar, entao vamos importar para o user.controller.js e assim poder usar esse metodos aqui.
+
+const userService = require("../services/user.service");
+
+//agora vamos criar a const user que vai receber o userService com todos os metodos que ele possui. 
+
+const user = userService
+
+//como esse userService tem todos os metodos, vamos utilizar o metodo create, que pega os dados do body, vai ficar assim:
+    const user = userService.create(req.body);
+
+//essa const vai ficar localizada logo apos o primeiro if dentro da const create desse modulo:
+
+const create = (req, res) => {
+    const {name, username, email, password, avatar} = req.body;
+
+    if(!name || ! username || !email || !password || !avatar) {
+        res.status(400).send({message: "Preencha todos os campos!"});
+    }
+
+	🚩️const user = userService.create(req.body); ---->>> AQUI🚩️
+
+    if(!user) {
+        return res.status(400).send({message: "Erro ao criar usuario."});
+    }
+
+    res.status(201).send({
+        message: "Usuario cadastrado com sucesso!",
+        user: {
+            id: user._id,
+            name, 
+            username,
+            email,
+            avatar
+        }, 
+    });
+};
+
+//dessa forma temos a const create, que vai criar o usuario. Ela verifica se algum campo esta em branco, se nao estiver ela pega os dados do body atraves da const user, e por fim faz mais uma verificacao, onde ve se os dados foram recebidos. Se nao foram, retorna um erro ao criar usuario, se foram ela retorna os dados desse usuario. 
+
+//como o create faz algo assincrono (ir no banco de dados, criar e retornar os dados e passar para a funcao) nos precisamos colocar o async e await para nao dar erro nas verificacoes. Porque senao nao vamos ter todos os dados na hora das verificacoes.
+
+//o async sempre e colocado antes dos parametros da funcao:
+
+const create = 🚩️async (req, res) => {
+    const {name, username, email, password, avatar} = req.body;
+
+    if(!name || ! username || !email || !password || !avatar) {
+        res.status(400).send({message: "Preencha todos os campos!"});
+    }
+
+//e o await vai ficar antes de userService pelo seguinte motivo: 
+//ao colocar ele aqui, estamos dizendo: Espera executar o userService.create para poder continuar a verificacao.
+
+    const user = 🚩️ await userService.create(req.body);
+
+//se nao esperarmos vai dar erro, porque quando chegar nesse if o user ainda nao vai ter o retorno de user.Service.create (pq ele e assincrono)
+
+    if(!user) {
+        return res.status(400).send({message: "Erro ao criar usuario."});
+    }
+
+    res.status(201).send({
+        message: "Usuario cadastrado com sucesso!",
+        user: {
+            id: user._id,
+            name, 
+            username,
+            email,
+            avatar
+        }, 
+    });
+};
 
 
