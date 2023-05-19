@@ -44,15 +44,119 @@ necessarias para rodar o projeto.
 //dentro de routes, criar o arquivo user.route.js
 //criar const route = require("express").Router();    -> Assim ja criamos a const e executamos o express, sem necessidade de criar a const app
 //ainda dentro do arquivo route.js, criar o metodo get:
+PS: todas as rotas ficarao dentro desse arquivo, sendo que as callbacks ficarao no usercontroller.js 
 route.get("/");
 
 //no arquivo user.controller.js, criar modulo:
-const user = (req, res) => {
-	return console.log("O que quiser aqui no codigo");
-}
+const create = (req, res) => {
+    const user = req.body;
+    
+    res.json(user)
+};
+
+//aqui estamos criando a const user e armazenando o que estamos enviando atraves do body pelo metodo POST, e retornando um objeto json user com todos os dados desse usuario.
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------
 
 // exportar modulo user:
-module.exports = {user}   -> Assim exportamos o modulo como objeto.
+module.exports = { create }   -> Assim exportamos o modulo como objeto.
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------
+
+//no arquivo user.route.js, importar o user.controller, que sera o segundo parametro da nossa funcao callback. O arquivo ficara assim: 
+
+const route = require("express").Router();
+const userController = require("../controllers/user.controller");
+
+route.get("/", userController.user);
+
+ainda em user.route.js, exportar o module:
+module.exports = route;
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------
+
+//ir para index.jse importar as rotas:
+const userRoute = require("./src/routes/user.route");
+
+//Ainda no arquivo index.js, incluir:
+//para utilizar as rotas, comando app.use("/user", userRoute); 
+//para o nosso projeto poder utilizar o json nas requisicoes, comando app.use(express.json());
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------
+
+//no arquivo user.controller.js, deixar a funcao assim:
+const create = (req, res) => {
+    const user = req.body;
+    
+    res.json(user)
+};
+
+//aqui estamos criando a const user e armazenando o que estamos enviando atraves do body pelo metodo POST, e retornando um objeto json user com todos os dados desse usuario.
+//podemos desestruturar o objeto user para pegar as informacoes dele como email, senha, etc de forma separada, dessa forma a sintaxe da funcao ficaria assim:
+
+const create = (req, res) => {
+    const {name, username, email, password, avatar} = req.body;      -> desestruturacao.
+
+    if(!name || ! username || !email || !password || !avatar) {
+        res.status(400).send({message: "Preencha todos os campos!"});
+    }
+
+    res.json("Ok");
+};
+
+module.exports = { create };
+
+//agora nos vamos retornar a mensagem de usuario cadastrado com sucesso, status code 201 da MDN:
+res.status(201).send({
+	message: "Usuario cadastrado com sucesso",
+	user: {
+		name, 
+		username, 
+		email,
+		password, 
+		avatar
+		},
+	});
+	
+//e importante notar que enviamos dois objetos atraves do res.status(201).send: o primeiro objeto e a message e o segundo o user, com seus valores. 
+//importante falar tambem que no caso de chaves e valores iguais no javascript, nao precisamos repetir. por isso nao escrevi assim:
+	user{
+		name: name,
+		username: username,
+		email: email,
+		password: password,
+		avatar: avatar
+		},
+	});
+	
+	
+//agora nossa funcao create ficara assim: 
+const create = (req, res) => {
+    const {name, username, email, password, avatar} = req.body;
+
+    if(!name || ! username || !email || !password || !avatar) {
+        res.status(400).send({message: "Preencha todos os campos!"});
+    }
+
+    res.status(201).send({
+        message: "Usuario cadastrado com sucesso!",
+        user: {
+            name, 
+            username,
+            email,
+            avatar
+        }, 
+    });
+};
+
+//E valido falar tambem que na mensagem de sucesso eu nao coloquei a senha do user na tela, so os dados nao sensiveis.
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Ate aqui nao mexemos com banco de dados, vamos comecar agora.
+
+
+
 
 
 
