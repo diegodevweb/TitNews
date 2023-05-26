@@ -2,4 +2,9 @@ node_modules
 passoApasso
 mongoDb
 .env
+<<<<<<< HEAD
 /home/diego/Desktop/spa/TitNews/passoApasso.txt
+=======
+passoApasso.txt
+
+>>>>>>> 8a4b930 (Criacao do arquivo global.middlewares.js)
