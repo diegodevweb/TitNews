@@ -1,20 +1,20 @@
-import userService from "../services/user.service.js";
+import userService from '../services/user.service.js';
 
 const create = async (req, res) => {
   const { name, username, email, password, avatar } = req.body;
 
   if (!name || !username || !email || !password) {
-    res.status(400).send({ message: "Preencha todos os campos!" });
+    res.status(400).send({ message: 'Preencha todos os campos!' });
   }
 
   const user = await userService.createService(req.body);
 
   if (!user) {
-    return res.status(400).send({ message: "Erro ao criar usuario." });
+    return res.status(400).send({ message: 'Erro ao criar usuario.' });
   }
 
   res.status(201).send({
-    message: "Usuario cadastrado com sucesso!",
+    message: 'Usuario cadastrado com sucesso!',
     user: {
       id: user._id,
       name,
@@ -29,14 +29,13 @@ const findAll = async (req, res) => {
   const users = await userService.findAllService();
 
   if (users.length === 0) {
-    return res.status(400).send({ message: "Nao ha usuarios cadastrados." });
+    return res.status(400).send({ message: 'Nao ha usuarios cadastrados.' });
   }
 
   res.send(users);
 };
 
 const findById = async (req, res) => {
-
   const user = req.user;
 
   res.send(user);
@@ -46,24 +45,16 @@ const update = async (req, res) => {
   const { name, username, email, password, avatar } = req.body;
 
   if (!name && !username && !email && !password) {
-    res.status(400).send({ message: "Preencha todos os campos!" });
+    res.status(400).send({ message: 'Preencha todos os campos!' });
   }
 
   const id = req.id;
 
   const user = await userService.findByIdService(id);
-  
-  await userService.updateService(
-    id, 
-    name,
-    username,
-    email,
-    password,
-    avatar
-  );
 
-  res.send({message : "Usuario atualizado com sucesso!"});
+  await userService.updateService(id, name, username, email, password, avatar);
 
+  res.send({ message: 'Usuario atualizado com sucesso!' });
 };
 
 export default { create, findAll, findById, update };
